@@ -15,9 +15,13 @@ query_output=$(
 # Print BUILD.bazel file paths (absolute)
 echo "$query_output" |
     awk '{ print $1 }' |
-    sed -e 's/:.*$//' # Delete the row/column from the end of the BUILD file
+     # Delete the row/column from the end of the BUILD file
+    sed -e 's/:.*$//' |
+    uniq
 
 # Print source file paths (relative)
 echo "$query_output" |
     awk '{ print $NF }' |
-    sed -e 's|//:|./|' -e 's|//|./|' -e 's|:|/|' # Convert bazel labels to paths
+     # Convert bazel labels to paths
+    sed -e 's|//:|./|' -e 's|//|./|' -e 's|:|/|' |
+    uniq
