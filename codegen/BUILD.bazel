@@ -1,11 +1,13 @@
 package(default_visibility = ["//visibility:public"])
 
-genrule(
+load(":rules.bzl", "gen_source")
+
+gen_source(
     name = "generated",
     srcs = ["generated_word.txt"],
     outs = [
-        "generated.hpp",
         "generated.cpp",
+        "generated.hpp",
     ],
     cmd = """
 printf '

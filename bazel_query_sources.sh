@@ -6,22 +6,28 @@ set -o nounset
 
 target=$1
 
-query="kind('source file', deps(${target}))"
-query_output=$(
-    bazel query "$query" --output location |
-    grep -v 'source file @' # Filter out external workspaces
-)
+function label_to_relpath() {
+    # Convert bazel labels to paths
+    sed -e 's|//:|./|' -e 's|//|./|' -e 's|:|/|' | uniq
+}
 
-# Print BUILD.bazel file paths (absolute)
-echo "$query_output" |
-    awk '{ print $1 }' |
-     # Delete the row/column from the end of the BUILD file
-    sed -e 's/:.*$//' |
-    uniq
+# Unconditionally depend on WORKSPACE as a catch-all for third-party deps changing
+echo "./WORKSPACE"
+
+# Quick + dirty check for load() in WORKSPACE
+grep -o 'load("//.*",' ./WORKSPACE |
+    sed -e 's/load("//' -e 's/",.*//' |
+    label_to_relpath
 
 # Print source file paths (relative)
-echo "$query_output" |
+bazel query --output=location "kind('source file', deps(${target}))" |
+     # Filter out external workspaces
+    grep -v 'source file @' |
     awk '{ print $NF }' |
-     # Convert bazel labels to paths
-    sed -e 's|//:|./|' -e 's|//|./|' -e 's|:|/|' |
-    uniq
+    label_to_relpath
+
+# Print BUILD.bazel and *.bzl file paths (absolute)
+bazel query "buildfiles(${target})" |
+     # Filter out external workspaces
+    grep -v '^@' |
+    label_to_relpath
