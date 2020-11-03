@@ -1,0 +1,28 @@
+package(default_visibility = ["//visibility:public"])
+
+genrule(
+    name = "generated",
+    srcs = ["generated_word.txt"],
+    outs = [
+        "generated.hpp",
+        "generated.cpp",
+    ],
+    cmd = """
+printf '
+#pragma once
+
+#include <string>
+
+struct Generated {
+    static std::string theWord;
+};
+' > $(execpath :generated.hpp)
+
+printf '
+#include "generated.hpp"
+
+std::string Generated::theWord{"%s"};
+' $$(cat $(execpath generated_word.txt)) > $(execpath :generated.cpp)
+
+""",
+)
