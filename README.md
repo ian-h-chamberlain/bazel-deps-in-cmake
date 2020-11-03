@@ -19,12 +19,12 @@ likely to change:
 The output of `bazel_query_sources.sh` for this repo is:
 
 ```sh
-$ ./bazel_query_sources.sh //... 2>/dev/null
-./WORKSPACE
-./thirdparty/skylib.bzl
-./codegen/generated_word.txt
-./codegen/rules.bzl
-./codegen/BUILD.bazel
+$ ../bazel_query_sources.sh //... 2>/dev/null
+/Users/ichamberlain/Documents/cmake_bazel_poc/WORKSPACE
+/Users/ichamberlain/Documents/cmake_bazel_poc/thirdparty/skylib.bzl
+/Users/ichamberlain/Documents/cmake_bazel_poc/codegen/generated_word.txt
+/Users/ichamberlain/Documents/cmake_bazel_poc/codegen/rules.bzl
+/Users/ichamberlain/Documents/cmake_bazel_poc/codegen/BUILD.bazel
 ```
 
 By feeding this output back to `DEPENDS` during CMake configuration time, any of
